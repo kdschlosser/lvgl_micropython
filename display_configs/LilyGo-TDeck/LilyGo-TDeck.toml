@@ -58,7 +58,7 @@ params = [true]
 [display.init]
 params = []
 
-display.set_rotation]
+[display.set_rotation]
 params = [3]
 
 [gt911.touch]
