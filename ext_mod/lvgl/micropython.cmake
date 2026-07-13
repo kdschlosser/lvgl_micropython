@@ -31,7 +31,7 @@ if(${SECOND_BUILD_ENV} EQUAL "0")
 
     execute_process(
         COMMAND
-            ${Python3_EXECUTABLE} ${BINDING_DIR}/gen/$ENV{GEN_SCRIPT}_api_gen_mpy.py ${LV_CFLAGS} --output=${CMAKE_BINARY_DIR}/lv_mp.c --include=${BINDING_DIR}/lib --include=${BINDING_DIR}/lib/lvgl --board=$ENV{LV_PORT} --module_name=lvgl --module_prefix=lv --metadata=${CMAKE_BINARY_DIR}/lv_mp.c.json --header_file=${LVGL_DIR}/lvgl.h
+            ${Python3_EXECUTABLE} ${BINDING_DIR}/gen/python_api_gen_mpy.py ${LV_CFLAGS} --output=${CMAKE_BINARY_DIR}/lv_mp.c --include=${BINDING_DIR}/lib --include=${BINDING_DIR}/lib/lvgl --board=$ENV{LV_PORT} --module_name=lvgl --module_prefix=lv --metadata=${CMAKE_BINARY_DIR}/lv_mp.c.json --header_file=${LVGL_DIR}/lvgl.h
         WORKING_DIRECTORY
             ${CMAKE_CURRENT_LIST_DIR}
 

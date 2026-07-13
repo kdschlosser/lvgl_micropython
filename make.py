@@ -2,11 +2,11 @@
 # Copyright (c) 2024 - 2025 Kevin G. Schlosser
 
 import os
-import sys
-import builder
 import shutil
-
+import sys
 from argparse import ArgumentParser
+
+import builder
 
 if sys.platform.startswith('win'):
     raise RuntimeError('compiling on windows is not supported at this time')
@@ -208,8 +208,7 @@ if lv_cflags is None:
     lv_cflags = ''
 
 
-extra_args.append(f'FROZEN_MANIFEST="{SCRIPT_DIR}/build/manifest.py"')
-extra_args.append(f'GEN_SCRIPT=python')
+extra_args.append('GEN_SCRIPT=python')
 
 
 if lv_cflags is not None:

@@ -1,20 +1,21 @@
 # Copyright (c) 2024 - 2025 Kevin G. Schlosser
 
+import json
 import os
 import shutil
 import sys
-import json
 from argparse import ArgumentParser
-from . import spawn
-from . import generate_manifest
-from . import update_mphalport as _update_mphalport
+
 from . import (
-    read_file,
-    write_file,
     copy_micropy_updates,
+    generate_manifest,
+    read_file,
     revert_files,
-    scrub_build_folder
+    scrub_build_folder,
+    spawn,
+    write_file,
 )
+from . import update_mphalport as _update_mphalport
 
 IDF_VER = '5.5.1'
 
@@ -1472,6 +1473,7 @@ def compile(*args):  # NOQA
         env['IDF_CCACHE_ENABLE'] = '1'
 
     args = build_sdkconfig(*args)
+    args.append(f'FROZEN_MANIFEST="{SCRIPT_DIR}/build/manifest.py"')
 
     if custom_board_path is None:
 
