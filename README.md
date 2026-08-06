@@ -81,7 +81,7 @@ used to be.
     - [Compiling for ESP32:](#compiling-for-esp32)
     - [Compiling for RP2:](#compiling-for-rp2)
     - [Compiling for STM32:](#compiling-for-stm32)
-    - [Compiling for Ubuntu (Linux):](#compiling-for-ubuntu-(linux))
+    - [Compiling for Ubuntu (Linux):](#compiling-for-ubuntu-linux)
     - [Compiling for macOS :](#compiling-for-macos)
     - [Compiling for Windows:](#compiling-for-windows)
   - [*Command line syntax/parameters*](#command-line-syntax/parameters)
