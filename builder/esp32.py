@@ -169,6 +169,7 @@ board_variant = None
 board = None
 skip_partition_resize = False
 partition_size = -1
+partition_source = None
 flash_size = 4
 oct_flash = False
 
@@ -304,6 +305,7 @@ def common_args(extra_args):
     global ccache
     global skip_partition_resize
     global partition_size
+    global partition_source
     global flash_size
     global board_variant
     global optimize_size
@@ -402,6 +404,12 @@ def common_args(extra_args):
             action='store'
         )
         esp_argParser.add_argument(
+            'PART_SRC',
+            dest='partition_source',
+            default=None,
+            action='store'
+        )
+        esp_argParser.add_argument(
             '--optimize-size',
             dest='optimize_size',
             default=False,
@@ -473,6 +481,17 @@ def common_args(extra_args):
     if custom_board_path is None:
         skip_partition_resize = esp_args.skip_partition_resize
         partition_size = esp_args.partition_size
+        partition_source = esp_args.partition_source
+        if partition_source is not None:
+            if not os.path.isabs(partition_source):
+                partition_source = os.path.join(
+                    SCRIPT_DIR, partition_source
+                )
+            partition_source = os.path.abspath(partition_source)
+            if not os.path.isfile(partition_source):
+                esp_argParser.error(
+                    f'PART_SRC does not name a file: {partition_source}'
+                )
         flash_size = esp_args.flash_size
         optimize_size = esp_args.optimize_size
         ota = esp_args.ota
@@ -1462,6 +1481,7 @@ def revert_custom_board():
 def compile(*args):  # NOQA
     global PORT
     global flash_size
+    global partition_source
 
     env, cmds = setup_idf_environ()
     env['IDF_COMPONENT_MANAGER'] = '1'
@@ -1474,14 +1494,19 @@ def compile(*args):  # NOQA
     args = build_sdkconfig(*args)
 
     if custom_board_path is None:
-
-        if partition_size == -1:
-            p_size = 0x25A000
+        if partition_source is not None:
+            shutil.copyfile(
+                partition_source,
+                f'{SCRIPT_DIR}/build/partitions.csv'
+            )
         else:
-            p_size = partition_size
+            if partition_size == -1:
+                p_size = 0x25A000
+            else:
+                p_size = partition_size
 
-        partition = Partition(p_size)
-        partition.save()
+            partition = Partition(p_size)
+            partition.save()
 
     update_main()
     update_mpthreadport()
@@ -1511,9 +1536,14 @@ def compile(*args):  # NOQA
                     revert_files('esp32')
                     sys.exit(ret_code)
 
+                if partition_source is not None:
+                    revert_files('esp32')
+                    sys.exit(ret_code)
+
         if (
             not skip_partition_resize and
             partition_size == -1 and
+            partition_source is None and
             custom_board_path is None
         ):
             for pattern in (
