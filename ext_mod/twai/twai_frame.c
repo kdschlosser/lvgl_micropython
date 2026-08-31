@@ -52,12 +52,17 @@ static mp_obj_t twai_frame_make_new(const mp_obj_type_t *type, size_t n_args, si
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all_kw_array(n_args, n_kw, all_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
+    // mp_obj_new_bytearray() copies its input with memcpy(), so it must not
+    // receive NULL.  Allocate the bytearray before the Frame so the Frame is
+    // not an unrooted GC allocation while another MicroPython allocation runs.
+    static const uint8_t initial_data[TWAI_FRAME_DATA_LEN] = {0};
+    mp_obj_t data = mp_obj_new_bytearray(TWAI_FRAME_DATA_LEN, initial_data);
     twai_frame_obj_t *self = mp_obj_malloc(twai_frame_obj_t, type);
     self->id = twai_frame_get_id(MP_OBJ_NEW_SMALL_INT(args[ARG_id].u_int));
     self->dlc = twai_frame_get_dlc(MP_OBJ_NEW_SMALL_INT(args[ARG_dlc].u_int));
     self->flags = twai_frame_get_flags(MP_OBJ_NEW_SMALL_INT(args[ARG_flags].u_int));
     twai_frame_validate_id(self->id, self->flags);
-    self->data = mp_obj_new_bytearray(TWAI_FRAME_DATA_LEN, NULL);
+    self->data = data;
     atomic_init(&self->in_use, false);
     self->owner = NULL;
     twai_frame_prepare_tx(self);
