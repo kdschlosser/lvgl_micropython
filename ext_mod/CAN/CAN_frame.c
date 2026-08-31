@@ -1,9 +1,9 @@
-#include "twai_frame.h"
+#include "CAN_frame.h"
 
 #include "py/objarray.h"
 #include "py/runtime.h"
 
-#include "twai_node.h"
+#include "CAN_node.h"
 
 static void twai_frame_validate_id(uint32_t id, uint8_t flags) {
     const uint32_t max_id = (flags & TWAI_FLAG_EXTENDED) ? 0x1fffffffU : 0x7ffU;

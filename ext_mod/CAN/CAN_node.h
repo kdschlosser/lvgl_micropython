@@ -10,7 +10,7 @@
 #include "freertos/queue.h"
 #include "freertos/task.h"
 
-#include "twai_frame.h"
+#include "CAN_frame.h"
 
 typedef struct _twai_node_obj_t {
     mp_obj_base_t base;

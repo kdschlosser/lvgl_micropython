@@ -1,7 +1,7 @@
-"""Six-lamp LVGL panel using the new pool-based ``twai`` API.
+"""Six-lamp LVGL panel using the new pool-based ``CAN`` API.
 
 Copy this file to the device and run it after flashing the firmware that
-contains ``ext_mod/twai``.  It retains the CAN message layout used by the old
+contains ``ext_mod/CAN``.  It retains the CAN message layout used by the old
 application:
 
 * TX ID 0x001, payload ``[value, register]``
@@ -17,7 +17,7 @@ import gc
 gc.collect()
 
 import time
-import twai
+import CAN
 from micropython import const
 import lvgl as lv
 import lcd_bus
@@ -80,9 +80,9 @@ _stop_previous_can_node()
 
 # The Frame objects are allocated once.  Node keeps strong references to both
 # pools; the TX picker below uses only a Frame whose driver ownership ended.
-can_rx_pool = tuple([twai.Frame() for _ in range(CAN_RX_POOL_SIZE)])
-can_tx_pool = tuple([twai.Frame() for _ in range(CAN_TX_POOL_SIZE)])
-can_node = twai.Node(
+can_rx_pool = tuple([CAN.Frame() for _ in range(CAN_RX_POOL_SIZE)])
+can_tx_pool = tuple([CAN.Frame() for _ in range(CAN_TX_POOL_SIZE)])
+can_node = CAN.Node(
     CAN_TX_PIN,
     CAN_RX_PIN,
     CAN_BITRATE,
@@ -90,7 +90,7 @@ can_node = twai.Node(
     tx_pool=can_tx_pool,
 )
 can_node.start()
-print("TWAI Ready.")
+print("CAN Ready.")
 
 
 def shutdown_can():
@@ -277,7 +277,7 @@ def check_can_bus_cb(_timer):
                 break
             try:
                 if (frame.id == CAN_STATE_ID
-                        and not (frame.flags & twai.RTR)
+                        and not (frame.flags & CAN.RTR)
                         and frame.dlc >= 1):
                     update_gui_from_state(frame.data[0])
             finally:
