@@ -209,7 +209,15 @@ def submodules():
         ]
         _run(cmd_)
 
-    cmd_ = ['cd lib/SDL && git checkout release-2.30.2']
+    # 2.32.8 is the SDL2 maintenance line with "Fixed building on macOS with
+    # OpenGL disabled" (libsdl-org/SDL 0b6eff41): 2.30.2 fails to compile
+    # against recent Xcode SDKs because SDL_cocoawindow.m messages the
+    # forward-declared SDLOpenGLContext when SDL_OPENGL is off, which newer
+    # clang treats as an error. Fetch first for clones that predate the tag.
+    cmd_ = [
+        'cd lib/SDL && git checkout release-2.32.8 2>/dev/null '
+        '|| (git fetch --tags && git checkout release-2.32.8)'
+    ]
     _run(cmd_)
 
     return_code, _ = spawn(submodules_cmd)
